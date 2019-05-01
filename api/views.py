@@ -1,8 +1,9 @@
 from django.shortcuts import render
-
 from django.contrib.auth.models import User, Group
+from .models import Student
+
 from rest_framework import viewsets
-from .serializers import UserSerializer, GroupSerializer
+from .serializers import *
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -19,3 +20,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
