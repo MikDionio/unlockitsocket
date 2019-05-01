@@ -3,7 +3,7 @@
     <v-card class="red">
       <v-card-title>Hello!</v-card-title>
     </v-card>
-    <p> Hi!</p>
+    <v-button>Hi!</v-button>
   </div>
 </template>
 
@@ -18,8 +18,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-body {
-  background-color: pink;
-  color: black;
-}
 </style>
