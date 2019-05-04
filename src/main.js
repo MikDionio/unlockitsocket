@@ -4,6 +4,10 @@ import App from './App.vue'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css' 
 
+import axios from 'axios'
+
+Vue.prototype.$http = axios
+
 Vue.config.productionTip = false
 Vue.use(Vuetify);
 
