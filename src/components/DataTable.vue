@@ -5,6 +5,7 @@
         <v-btn @click=newItem()>Add New User</v-btn>
       </template>
 
+      <!-- Data Form dialog box -->
       <v-card>
         <v-card-title>
           <span>User {{editedItem.userid}}</span>
@@ -12,24 +13,29 @@
         <v-card-text>
           <v-container>
             <v-flex>
+              User ID:<v-text-field label="User ID" v-model="editedItem.userid"></v-text-field>
+            </v-flex>
+            <v-flex>
               Credits:<v-text-field label="Credits" suffix="seconds" v-model="editedItem.credit"></v-text-field>
             </v-flex>
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click=cancel()>Cancel</v-btn>
+          <v-btn @click=close()>Cancel</v-btn>
           <v-btn @click=submitItem() class="green">Submit</v-btn>
         </v-card-actions>
       </v-card>
 
     </v-dialog>
+
+    <!-- Data Table -->
     <v-data-table
     :headers="headers"
     :items="users"
     >
       <template v-slot:items="props">
         <td>{{props.item.userid}}</td>
-        <td>{{props.item.credit}}</td>
+        <td>{{formatTime(props.item.credit)}}</td>
         <td>
           <v-icon color="green" @click=editItem(props.item)>edit</v-icon>
           <v-icon color="red" @click=deleteItem(props.item)>delete</v-icon>
@@ -83,6 +89,17 @@ export default {
     
   },
   methods:{
+    formatTime(seconds){
+      let h = parseInt(seconds/3600)
+      let m = parseInt((seconds%3600)/60)
+      let s = seconds%60
+
+      //padding
+      h = (h < 10 ? '0': '') + h
+      m = (m < 10 ? '0':'') + m
+      s = (s < 10 ? '0':'') + s
+      return h + ":" + m + ":" + s
+    },
     newItem(){
       this.editedIndex = -1,
       this.editedItem.userid = this.users.length + 1,
@@ -94,7 +111,7 @@ export default {
       this.editedItem = Object.assign({},item)
       this.dialog=true
     },
-    cancel(){
+    close(){
       this.dialog=false
     },
     submitItem(){
@@ -103,7 +120,8 @@ export default {
       }else{
         this.users.push(this.editedItem)
       }
-      this.cancel()
+      this.editedItem = Object.assign({},{userid: 0, credit: 0})
+      this.close()
     },
     deleteItem(item){
       const index = this.users.indexOf(item)
