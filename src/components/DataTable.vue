@@ -8,15 +8,22 @@
       <!-- Data Form dialog box -->
       <v-card>
         <v-card-title>
-          <span>User {{editedItem.userid}}</span>
+          <span v-if="this.editedIndex == -1">New User</span>
+          <span v-else>User {{editedItem.student_number}}</span>
         </v-card-title>
         <v-card-text>
           <v-container>
-            <v-flex>
-              User ID:<v-text-field label="User ID" v-model="editedItem.userid"></v-text-field>
+            <v-flex v-if="this.editedIndex == -1">
+              <v-text-field label="Student Number" v-model="editedItem.student_number"></v-text-field>
             </v-flex>
             <v-flex>
-              Credits:<v-text-field label="Credits" suffix="seconds" v-model="editedItem.credit"></v-text-field>
+              <v-text-field label="Name" v-model="editedItem.name"></v-text-field>
+            </v-flex>
+            <v-flex>
+              <v-text-field label = "RFID Serial Number" v-model="editedItem.serial_number"></v-text-field>
+            </v-flex>
+            <v-flex>
+              <v-text-field label="Balance" suffix="seconds" v-model="editedItem.balance"></v-text-field>
             </v-flex>
           </v-container>
         </v-card-text>
@@ -34,8 +41,10 @@
     :items="users"
     >
       <template v-slot:items="props">
-        <td>{{props.item.userid}}</td>
-        <td>{{formatTime(props.item.credit)}}</td>
+        <td>{{props.item.student_number}}</td>
+        <td>{{props.item.name}}</td>
+        <td>{{props.item.serial_number}}</td>
+        <td>{{formatTime(props.item.balance)}}</td>
         <td>
           <v-icon color="green" @click=editItem(props.item)>edit</v-icon>
           <v-icon color="red" @click=deleteItem(props.item)>delete</v-icon>
@@ -53,42 +62,64 @@ export default {
       dialog: false,
       editedIndex: -1,
       editedItem: {
-        userid: 0,
-        credit: 0,
+        student_number: 0,
+        name: "",
+        serial_number: 0,
+        balance: 0,
       },
       defaultItem:{
-        userid: 0,
-        credit:0
+        student_number: 0,
+        balance:0
       },
       headers:[
       {
-        text: 'User ID',
+        text: 'Student Number',
         align: 'left',
         sortable: true,
-        value: 'userid'
+        value: 'student_number'
       },
       {
-        text: 'Credit',
+        text: 'Student Name',
         align: 'left',
         sortable: true,
-        value: 'credit'
+        value: 'name'
+      },
+      {
+        text: 'Card Serial Number',
+        align: 'left',
+        sortable: true,
+        value: 'serial_number'
+      },
+      {
+        text: 'Balance',
+        align: 'left',
+        sortable: true,
+        value: 'balance'
       },
       {
         text: 'Actions',
         align: 'left',
         sortable: false,
-        value: 'userid',
+        value: 'student_number',
       }
       ],
-      users:[
-        {userid: 1, credit: 10000},
-        {userid: 2, credit: 200},
-        {userid: 3, credit: 40},
-      ]
+      users:[]
     }
     
   },
+  mounted(){
+    this.getItems()
+  },
   methods:{
+    getItems(){
+      this.$http.get('/students')
+      .then(response =>{
+        this.users = response.data
+      })
+      .catch(error =>{
+        console.log(error)
+      })
+    },
     formatTime(seconds){
       let h = parseInt(seconds/3600)
       let m = parseInt((seconds%3600)/60)
@@ -100,32 +131,70 @@ export default {
       s = (s < 10 ? '0':'') + s
       return h + ":" + m + ":" + s
     },
+
     newItem(){
       this.editedIndex = -1,
-      this.editedItem.userid = this.users.length + 1,
-      this.editedItem.credit = 0,
+      this.editedItem.student_number = "0",
+      this.editedItem.balance = 0,
       this.dialog=true
     },
+    
     editItem(item){
-      this.editedIndex = this.users.indexOf(item),
+      this.editedIndex = this.users.indexOf(item)
       this.editedItem = Object.assign({},item)
       this.dialog=true
     },
+
     close(){
+      this.editedItem = Object.assign({},{student_number: 0, name: "", serial_number: 0, balance: 0})
       this.dialog=false
     },
+
     submitItem(){
-      if(this.editedIndex > -1){
-        Object.assign(this.users[this.editedIndex],this.editedItem)
-      }else{
-        this.users.push(this.editedItem)
+      if(this.editedIndex > -1){//For editing
+        //Object.assign(this.users[this.editedIndex],this.editedItem)
+        this.$http.patch(`/students/${this.editedItem.student_number}/`,{
+          name: this.editedItem.name,
+          balance: this.editedItem.balance,
+          serial_number: this.editedItem.serial_number
+        }).then(
+          response => {
+            this.getItems()
+            console.log(response)
+          }
+        ).catch(error => {console.log(error)})
+      }else{//For creating
+        this.$http.post('/students/',{
+          student_number:this.editedItem.student_number,
+          name: this.editedItem.name,
+          balance: this.editedItem.balance,
+          serial_number: this.editedItem.serial_number
+        }).then(
+          response=>{
+            this.getItems()
+            console.log(response)
+          }
+        ).catch(
+          error=>{
+            console.log(error)
+          }
+        )
       }
-      this.editedItem = Object.assign({},{userid: 0, credit: 0})
+      this.editedItem = Object.assign({},{student_number: 0, name: "", serial_number: 0, balance: 0})
       this.close()
     },
+
     deleteItem(item){
-      const index = this.users.indexOf(item)
-      confirm('Are you sure you want to delete this item?') && this.users.splice(index, 1)
+      confirm('Are you sure you want to delete account number ' + item.student_number + '?') && this.$http.delete(`/students/${item.student_number}/`).then(
+        response => {
+          console.log(response)
+          this.getItems()
+        }
+      ).catch(
+        error =>{
+          console.log(error)
+        }
+      )
     }
   }
 }

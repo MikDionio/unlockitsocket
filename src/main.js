@@ -8,6 +8,8 @@ import axios from 'axios'
 
 Vue.prototype.$http = axios
 
+axios.defaults.baseURL = process.env.VUE_APP_API_URL
+
 Vue.config.productionTip = false
 Vue.use(Vuetify);
 
