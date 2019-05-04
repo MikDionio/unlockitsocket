@@ -17,5 +17,6 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Student
-        fields = ('student_number', 'name', 'balance', 'last_modified', 'url')
+        fields = ('student_number', 'name', 'serial_number', 'balance', 'is_using',
+        'last_login', 'last_logout', 'last_balance_change', 'url')
         # fields = '__all__'
