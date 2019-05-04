@@ -20,3 +20,8 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('student_number', 'name', 'serial_number', 'balance', 'is_using',
         'last_login', 'last_logout', 'last_balance_change', 'url')
         # fields = '__all__'
+
+class StudentSimpleSerializer(serializers.ModelSerializer):
+     class Meta:
+        model = Student
+        fields = ('student_number', 'serial_number', 'balance', 'is_using')

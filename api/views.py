@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User, Group
 from .models import Student
 
+from rest_framework.response import Response
 from rest_framework import viewsets
 from .serializers import *
 
@@ -27,3 +28,27 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = (AllowAny,)
+
+    # def update(self, request, pk=None):
+    #     return Response({
+    #         'detail': 'PUT requests not allowed'
+    #     })
+
+    # def partial_update(self, request, pk=None):
+    #     return Response({
+    #         'detail': 'PATCH requests not allowed'
+    #     })
+
+class StudentSimpleViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSimpleSerializer
+    permission_classes = (AllowAny,)
+
+    # def update(self, request, pk=None):
+    #     return Response({
+    #         'detail': 'PUT requests not allowed'
+    #     })
+
+    def partial_update(self, request, pk=None, *args, **kwargs):
+        print(request.data)
+        return super().partial_update(request, pk, *args, **kwargs)

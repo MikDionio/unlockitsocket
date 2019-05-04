@@ -26,6 +26,9 @@ class Student(models.Model):
             elif old_using and not self.is_using:
                 print("LOG OUT")
                 self.last_logout = timezone.now()
+                print("CONSUMING BALANCE...")
+                self.balance -= (self.last_logout - self.last_login).total_seconds()
+                self.balance = 0 if self.balance < 0 else self.balance
 
             # balance
             old_balance = old_student.balance
