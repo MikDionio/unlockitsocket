@@ -1,28 +1,28 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-card>
+      <v-card-title>
+        <h1>User Credit</h1>
+      </v-card-title>
+      <v-card-text>
+        <DataTable />
+      </v-card-text>
+    </v-card>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import DataTable from './components/DataTable'
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
-    HelloWorld
+    DataTable
+  },
+  data () {
+    return {
+      //
+    }
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
