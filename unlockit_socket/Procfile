@@ -1,1 +1,0 @@
-web: gunicorn unlockit_socket.wsgi 
