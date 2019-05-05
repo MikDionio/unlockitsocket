@@ -1,6 +1,6 @@
 .DS_Store
 node_modules
-/dist
+# /dist
 
 # local env files
 .env.local
@@ -52,7 +52,7 @@ media
 .Python
 build/
 develop-eggs/
-dist/
+# dist/
 downloads/
 eggs/
 .eggs/
