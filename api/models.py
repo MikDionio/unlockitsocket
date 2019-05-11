@@ -4,8 +4,8 @@ from django.utils import timezone
 # Create your models here.
 
 class Student(models.Model):
-    student_number = models.IntegerField(primary_key=True)
-    serial_number = models.IntegerField(null=True, unique=True)
+    rfid_number = models.BigIntegerField(primary_key=True)
+    student_number = models.BigIntegerField(null=True)    
     name = models.CharField(max_length=100)
     balance = models.IntegerField(default=0)    
     is_using = models.BooleanField(default=False)
