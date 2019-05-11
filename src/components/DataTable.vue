@@ -13,14 +13,16 @@
         </v-card-title>
         <v-card-text>
           <v-container>
-            <v-flex v-if="this.editedIndex == -1">
+            <v-flex>
+              <v-text-field label="RFID Serial Number" v-model="editedItem.rfid_number"
+                v-if="this.editedIndex == -1">
+              </v-text-field>
+            </v-flex>
+            <v-flex >
               <v-text-field label="Student Number" v-model="editedItem.student_number"></v-text-field>
             </v-flex>
             <v-flex>
               <v-text-field label="Name" v-model="editedItem.name"></v-text-field>
-            </v-flex>
-            <v-flex>
-              <v-text-field label = "RFID Serial Number" v-model="editedItem.serial_number"></v-text-field>
             </v-flex>
             <v-flex>
               <v-text-field label="Balance" suffix="seconds" v-model="editedItem.balance"></v-text-field>
@@ -40,16 +42,17 @@
     :headers="headers"
     :items="users"
     >
-      <template v-slot:items="props">
-        <td>{{props.item.student_number}}</td>
-        <td>{{props.item.name}}</td>
-        <td>{{props.item.serial_number}}</td>
-        <td>{{formatTime(props.item.balance)}}</td>
-        <td>
-          <v-icon color="green" @click=editItem(props.item)>edit</v-icon>
-          <v-icon color="red" @click=deleteItem(props.item)>delete</v-icon>
-        </td>
-      </template>
+        <template v-slot:items="props">
+            <td>{{props.item.rfid_number}}</td>
+            <td>{{props.item.student_number}}</td>
+            <td>{{props.item.name}}</td>        
+            <td>{{formatTime(props.item.balance)}}</td>
+            <td><v-icon :color="isUsingColor(props.item.is_using)">{{ isUsingIcon(props.item.is_using) }}</v-icon></td>
+            <td>
+              <v-icon color="green" @click=editItem(props.item)>edit</v-icon>
+              <v-icon color="red" @click=deleteItem(props.item)>delete</v-icon>
+            </td>
+        </template>
     </v-data-table>
   </div>
 </template>
@@ -64,7 +67,7 @@ export default {
       editedItem: {
         student_number: 0,
         name: "",
-        serial_number: 0,
+        rfid_number: 0,
         balance: 0,
       },
       defaultItem:{
@@ -72,6 +75,12 @@ export default {
         balance:0
       },
       headers:[
+      {
+        text: 'RFID Number',
+        align: 'left',
+        sortable: true,
+        value: 'rfid_number'
+      },
       {
         text: 'Student Number',
         align: 'left',
@@ -85,16 +94,16 @@ export default {
         value: 'name'
       },
       {
-        text: 'Card Serial Number',
-        align: 'left',
-        sortable: true,
-        value: 'serial_number'
-      },
-      {
         text: 'Balance',
         align: 'left',
         sortable: true,
         value: 'balance'
+      },
+      {
+        text: 'In Use',
+        align: 'left',
+        sortable: true,
+        value: 'is_using'
       },
       {
         text: 'Actions',
@@ -111,6 +120,12 @@ export default {
     this.getItems()
   },
   methods:{
+    isUsingIcon(isUsing) {
+      return isUsing? "power" : "power_off"
+    },
+    isUsingColor(isUsing) {
+      return isUsing? "blue" : "#424242"
+    },
     getItems(){
       this.$http.get('/students')
       .then(response =>{
@@ -137,8 +152,7 @@ export default {
       this.editedItem.student_number = "0",
       this.editedItem.balance = 0,
       this.dialog=true
-    },
-    
+    },    
     editItem(item){
       this.editedIndex = this.users.indexOf(item)
       this.editedItem = Object.assign({},item)
@@ -146,17 +160,16 @@ export default {
     },
 
     close(){
-      this.editedItem = Object.assign({},{student_number: 0, name: "", serial_number: 0, balance: 0})
+      this.editedItem = Object.assign({},{student_number: 0, name: "", rfid_number: 0, balance: 0})
       this.dialog=false
     },
-
     submitItem(){
       if(this.editedIndex > -1){//For editing
         //Object.assign(this.users[this.editedIndex],this.editedItem)
-        this.$http.patch(`/students/${this.editedItem.student_number}/`,{
+        this.$http.patch(`/students/${this.editedItem.rfid_number}/`,{
           name: this.editedItem.name,
           balance: this.editedItem.balance,
-          serial_number: this.editedItem.serial_number
+          rfid_number: this.editedItem.rfid_number
         }).then(
           response => {
             this.getItems()
@@ -168,7 +181,7 @@ export default {
           student_number:this.editedItem.student_number,
           name: this.editedItem.name,
           balance: this.editedItem.balance,
-          serial_number: this.editedItem.serial_number
+          rfid_number: this.editedItem.rfid_number
         }).then(
           response=>{
             this.getItems()
@@ -180,12 +193,12 @@ export default {
           }
         )
       }
-      this.editedItem = Object.assign({},{student_number: 0, name: "", serial_number: 0, balance: 0})
+      this.editedItem = Object.assign({},{student_number: 0, name: "", rfid_number: 0, balance: 0})
       this.close()
     },
 
     deleteItem(item){
-      confirm('Are you sure you want to delete account number ' + item.student_number + '?') && this.$http.delete(`/students/${item.student_number}/`).then(
+      confirm('Are you sure you want to delete account number ' + item.student_number + '?') && this.$http.delete(`/students/${item.rfid_number}/`).then(
         response => {
           console.log(response)
           this.getItems()
