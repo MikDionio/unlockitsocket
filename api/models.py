@@ -2,6 +2,7 @@ from django.db import models
 from django.db import connection
 from django.utils import timezone
 # Create your models here.
+# EDIT
 
 class Student(models.Model):
     rfid_number = models.BigIntegerField(primary_key=True)
