@@ -198,7 +198,7 @@ export default {
     },
 
     deleteItem(item){
-      confirm('Are you sure you want to delete account number ' + item.student_number + '?') && this.$http.delete(`/students/${item.rfid_number}/`).then(
+      confirm('Are you sure you want to delete rfid number ' + item.rfid_number + '?') && this.$http.delete(`/students/${item.rfid_number}/`).then(
         response => {
           console.log(response)
           this.getItems()
