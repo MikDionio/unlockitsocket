@@ -1,12 +1,13 @@
 <template>
   <v-app>
     <v-card>
-      <v-card-title>
+      <!-- <v-card-title>
         <h1>User Credit</h1>
       </v-card-title>
       <v-card-text>
         <DataTable />
-      </v-card-text>
+      </v-card-text> -->
+      <router-view></router-view>
     </v-card>
   </v-app>
 </template>
