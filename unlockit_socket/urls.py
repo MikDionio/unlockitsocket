@@ -21,11 +21,11 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('', TemplateView.as_view(template_name='index.html')),
-    # re_path(r'^(?P<path>.*)/$', TemplateView.as_view(template_name='index.html')),
+    re_path(r'^(?P<path>.*)/$', TemplateView.as_view(template_name='index.html')),
 
     re_path(r'^api-token-auth/', obtain_jwt_token)
 ]
