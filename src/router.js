@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import DataTable from "@/components/DataTable"
 import UserView from "@/components/UserView"
+import UserLogin from "@/components/UserLogin"
 //use vue router
 Vue.use(VueRouter)
 
@@ -15,9 +16,15 @@ const router = new VueRouter({
             name: "admin",
             component: DataTable
         },
+        //student login page
+        {
+            path:"/login",
+            name: "login",
+            component: UserLogin
+        },
         //individual student page
         {
-            path:"/student",
+            path:"/viewing/:rfid_number?",
             name: "student",
             component: UserView
         }

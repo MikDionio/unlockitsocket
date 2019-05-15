@@ -4,42 +4,61 @@
       <h1>User Credit</h1>
     </v-card-title>
     <v-card-text>
-      <v-dialog v-model="dialog" max-width = 500px>
-        <template v-slot:activator="{on}">
-          <v-btn v-if="adminMode" @click=newItem()>Add New User</v-btn>
-        </template>
 
-        <!-- Data Form dialog box -->
-        <v-card>
-          <v-card-title>
-            <span v-if="this.editedIndex == -1">New User</span>
-            <span v-else>User {{editedItem.student_number}}</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-flex>
-                <v-text-field label="RFID Serial Number" v-model="editedItem.rfid_number"
-                  v-if="this.editedIndex == -1">
-                </v-text-field>
-              </v-flex>
-              <v-flex >
-                <v-text-field label="Student Number" v-model="editedItem.student_number"></v-text-field>
-              </v-flex>
-              <v-flex>
-                <v-text-field label="Name" v-model="editedItem.name"></v-text-field>
-              </v-flex>
-              <v-flex>
-                <v-text-field label="Balance" suffix="seconds" v-model="editedItem.balance"></v-text-field>
-              </v-flex>
-            </v-container>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn @click=close()>Cancel</v-btn>
-            <v-btn @click=submitItem() class="green">Submit</v-btn>
-          </v-card-actions>
-        </v-card>
+      <!--Search Bar -->
+      <v-container left pa-2>
+        <v-layout>
+          <h3>Search by RFID</h3>
+        </v-layout>
+        <v-layout row>
+          <v-flex xs3>
+            <v-text-field label="RFID Number"  v-model="rfidInput"></v-text-field> 
+          </v-flex>
+          <v-flex>
+            <v-btn @click=getItem()>Search</v-btn>
+          </v-flex>
+        </v-layout>
+      </v-container>
 
-      </v-dialog>
+      <v-container left pl-0 pt-2 pb-2 pr-2>
+        <v-dialog v-model="dialog" max-width = 500px>
+          <template v-slot:activator="{on}">
+            <v-btn @click=newItem()>Add New User</v-btn>
+            <v-btn @click=getItems()>Reload Table</v-btn>
+          </template>
+
+          <!-- Data Form dialog box -->
+          <v-card>
+            <v-card-title>
+              <span v-if="this.editedIndex == -1">New User</span>
+              <span v-else>User {{editedItem.student_number}}</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-flex>
+                  <v-text-field label="RFID Serial Number" v-model="editedItem.rfid_number"
+                    v-if="this.editedIndex == -1">
+                  </v-text-field>
+                </v-flex>
+                <v-flex >
+                  <v-text-field label="Student Number" v-model="editedItem.student_number"></v-text-field>
+                </v-flex>
+                <v-flex>
+                  <v-text-field label="Name" v-model="editedItem.name"></v-text-field>
+                </v-flex>
+                <v-flex>
+                  <v-text-field label="Balance" suffix="seconds" v-model="editedItem.balance"></v-text-field>
+                </v-flex>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn @click=close()>Cancel</v-btn>
+              <v-btn @click=submitItem() class="green">Submit</v-btn>
+            </v-card-actions>
+          </v-card>
+
+        </v-dialog>
+      </v-container>
 
     <!-- Data Table -->
       <v-data-table
@@ -52,7 +71,7 @@
               <td>{{props.item.name}}</td>        
               <td>{{formatTime(props.item.balance)}}</td>
               <td><v-icon :color="isUsingColor(props.item.is_using)">{{ isUsingIcon(props.item.is_using) }}</v-icon></td>
-              <td v-if="adminMode">
+              <td>
                 <v-icon color="green" @click=editItem(props.item)>edit</v-icon>
                 <v-icon color="red" @click=deleteItem(props.item)>delete</v-icon>
               </td>
@@ -60,7 +79,6 @@
       </v-data-table>
     </v-card-text>
   </div>
-    
 </template>
 
 <script>
@@ -68,7 +86,7 @@ export default {
   name: 'DataTable',
   data(){
     return{
-      adminMode: true,
+      rfidInput: 0,
       dialog: false,
       editedIndex: -1,
       editedItem: {
@@ -137,6 +155,16 @@ export default {
       this.$http.get('/students')
       .then(response =>{
         this.users = response.data
+      })
+      .catch(error =>{
+        console.log(error)
+      })
+    },
+    getItem(){
+      this.$http.get(`/students/${this.rfidInput}`)
+      .then(response =>{
+        this.users = []
+        this.users[0] = response.data
       })
       .catch(error =>{
         console.log(error)
