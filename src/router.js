@@ -11,13 +11,13 @@ const router = new VueRouter({
     routes:[
         //admin page
         {
-            path:"/",
+            path:"/admin",
             name: "admin",
             component: DataTable
         },
         //individual student page
         {
-            path:"/:rfid_number?",
+            path:"/student",
             name: "student",
             component: UserView
         }

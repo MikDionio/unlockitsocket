@@ -1,18 +1,41 @@
 <template>
     <div>
-        <v-card v-if="validUser">
-            <v-card-title>
-                <h1>User: {{this.userData.name}}</h1>
-            </v-card-title>
-            <v-card-text>
-                <h3>Student Number: {{this.userData.student_number}}</h3>
-                <h3>RFID Number: {{this.userData.rfid_number}}</h3>
-                <h3>Time Left: {{formatTime(this.userData.balance)}}</h3>
-            </v-card-text>
-        </v-card>
-        <v-card v-else>
-            <h1>Not a valid user</h1>
-        </v-card>
+        <v-container grid-list-md fluid>
+            <v-layout row wrap>
+                <v-flex>
+                    <h1>Student View</h1>
+                </v-flex>
+            </v-layout>
+            <v-layout>
+                <v-flex>
+                    <v-card>
+                        <v-card-text>
+                            <v-text-field v-model="rfid_number" label="RFID Number"></v-text-field>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn @click= getUser(rfid_number) color="green">Search</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+            <v-layout>
+                <v-flex>
+                    <v-card v-if="validUser">
+                        <v-card-title>
+                            <h1>User: {{this.userData.name}}</h1>
+                        </v-card-title>
+                        <v-card-text>
+                            <h3>Student Number: {{this.userData.student_number}}</h3>
+                            <h3>RFID Number: {{this.userData.rfid_number}}</h3>
+                            <h3>Time Left: {{formatTime(this.userData.balance)}}</h3>
+                        </v-card-text>
+                     </v-card>
+                    <v-card v-else>
+                        <h1>Not a valid user</h1>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+        </v-container>
     </div>
 </template>
 
@@ -21,13 +44,14 @@
         data(){
             return{
                 validUser: false,
+                rfid_number: 0,
                 userData: {}
             }
         },
         computed:{
-            rfid_number(){
-                return this.$route.params.rfid_number;
-            }
+            // rfid_number(){
+            //     return this.$route.params.rfid_number;
+            // }
         },
         mounted(){
             this.getUser(this.rfid_number)
