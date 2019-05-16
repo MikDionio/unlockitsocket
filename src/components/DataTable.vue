@@ -204,7 +204,7 @@ export default {
         this.$http.patch(`/students/${this.editedItem.rfid_number}/`,{
           name: this.editedItem.name,
           balance: this.editedItem.balance,
-          rfid_number: this.editedItem.rfid_number
+          student_number: this.editedItem.student_number
         }).then(
           response => {
             this.getItems()
