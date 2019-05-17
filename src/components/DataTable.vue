@@ -195,7 +195,7 @@ export default {
       return h + ":" + m + ":" + s
     },
     formatEditedTime(hours, minutes, seconds){
-      return hours*3600 + minutes*60 + seconds
+      return hours*3600 + minutes*60 + parseInt(seconds)
     },
     addThirtyMins(){
       this.editedMinute = this.editedMinute + 30
@@ -237,9 +237,9 @@ export default {
       this.editedSeconds = 0
     },
     submitItem(){
+      this.editedItem.balance = this.formatEditedTime(this.editedHour,this.editedMinute,this.editedSeconds)
       if(this.editedIndex > -1){//For editing
-        //Object.assign(this.users[this.editedIndex],this.editedItem)
-        this.editedItem.balance = this.formatEditedTime(this.editedHour,this.editedMinute,this.editedSeconds)
+        //Object.assign(this.users[this.editedIndex],this.editedItem)        
         this.$http.patch(`/students/${this.editedItem.rfid_number}/`,{
           name: this.editedItem.name,
           balance: this.editedItem.balance,
