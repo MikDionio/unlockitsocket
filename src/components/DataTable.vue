@@ -46,8 +46,17 @@
                 <v-flex>
                   <v-text-field label="Name" v-model="editedItem.name"></v-text-field>
                 </v-flex>
+                <v-flex xs5>
+                  Balance:
+                  <v-layout justify-space-between>
+                    <v-flex xs2><v-text-field label="H" suffix="" v-model="editedHour"></v-text-field></v-flex>
+                    <v-flex xs2><v-text-field label="M" suffix="" v-model="editedMinute"></v-text-field></v-flex>
+                    <v-flex xs2> <v-text-field label="S" suffix="" v-model="editedSeconds"></v-text-field></v-flex>
+                  </v-layout>
+                </v-flex>
                 <v-flex>
-                  <v-text-field label="Balance" suffix="seconds" v-model="editedItem.balance"></v-text-field>
+                  <v-btn @click=addThirtyMins()>Add 30 minutes</v-btn>
+                  <v-btn @click=addOneHour()>Add 1 hour</v-btn>
                 </v-flex>
               </v-container>
             </v-card-text>
@@ -95,6 +104,9 @@ export default {
         rfid_number: 0,
         balance: 0,
       },
+      editedHour: 0,
+      editedMinute: 0,
+      editedSeconds: 0,
       defaultItem:{
         student_number: 0,
         balance:0
@@ -168,6 +180,7 @@ export default {
       })
       .catch(error =>{
         console.log(error)
+        console.log("RFID Number not found!")
       })
     },
     formatTime(seconds){
@@ -181,7 +194,15 @@ export default {
       s = (s < 10 ? '0':'') + s
       return h + ":" + m + ":" + s
     },
-
+    formatEditedTime(hours, minutes, seconds){
+      return hours*3600 + minutes*60 + seconds
+    },
+    addThirtyMins(){
+      this.editedMinute = this.editedMinute + 30
+    },
+    addOneHour(){
+      this.editedHour = this.editedHour + 1
+    },
     newItem(){
       this.editedIndex = -1,
       this.editedItem.student_number = "0",
@@ -192,15 +213,33 @@ export default {
       this.editedIndex = this.users.indexOf(item)
       this.editedItem = Object.assign({},item)
       this.dialog=true
-    },
 
+      this.editedHour = 0
+      this.editedMinute = 0
+      this.editedSeconds = 0
+      if(item.balance > 3600){
+         this.editedHour = Math.floor(item.balance/3600)
+      }
+
+      if(item.balance > 60){
+        this.editedMinute = Math.floor((item.balance%3600)/60)
+      }
+
+      if(item.balance > 1){
+        this.editedSeconds = Math.floor(item.balance%60)
+      }
+    },
     close(){
       this.editedItem = Object.assign({},{student_number: 0, name: "", rfid_number: 0, balance: 0})
       this.dialog=false
+      this.editedHour = 0
+      this.editedMinute = 0
+      this.editedSeconds = 0
     },
     submitItem(){
       if(this.editedIndex > -1){//For editing
         //Object.assign(this.users[this.editedIndex],this.editedItem)
+        this.editedItem.balance = this.formatEditedTime(this.editedHour,this.editedMinute,this.editedSeconds)
         this.$http.patch(`/students/${this.editedItem.rfid_number}/`,{
           name: this.editedItem.name,
           balance: this.editedItem.balance,
@@ -229,6 +268,9 @@ export default {
         )
       }
       this.editedItem = Object.assign({},{student_number: 0, name: "", rfid_number: 0, balance: 0})
+      this.editedHour = 0
+      this.editedMinute = 0
+      this.editedSeconds = 0
       this.close()
     },
 
