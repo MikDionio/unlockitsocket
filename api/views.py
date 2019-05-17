@@ -41,10 +41,25 @@ class StudentViewSet(viewsets.ModelViewSet):
         obj = Student.objects.filter(pk=pk).first()
         if obj and 'is_using' in data:
             is_logout = obj.is_using and not data['is_using']
-            if is_logout and 'balance' not in data:
+            if is_logout and not ('balance' in data or 'decrement' in data):
                 new_balance = int(obj.balance - (timezone.now() - obj.last_login).total_seconds())
-                data['balance'] = new_balance if new_balance > 0 else 0
-                print("new balance: {}".format(new_balance))
+                new_balance = new_balance if new_balance > 0 else 0
+                data['balance'] = new_balance
+                print("Balance auto-decremented to: {}".format(new_balance))
+
+            if is_logout and 'decrement' in data and 'balance' not in data:
+                new_balance = obj.balance - data['decrement']
+                new_balance = new_balance if new_balance > 0 else 0
+                data['balance'] = new_balance
+                print("Balance decremented to: {}".format(new_balance))
+
+            is_login = not obj.is_using and data['is_using']
+            if is_login and obj.balance <= 0:
+                data['is_using'] = False
+                print("insuffience balance: login failed")
+
+
+
         return super().partial_update(request, pk, *args, **kwargs)
 
 class StudentSimpleViewSet(StudentViewSet):
